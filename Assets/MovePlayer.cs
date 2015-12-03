@@ -28,6 +28,10 @@ public class MovePlayer : MonoBehaviour, MovableInterface {
             this.rb.AddForce(this.direction * this.thrust);
         }
 
+        if (!moving) {
+            this.rb.velocity = Vector3.zero;
+        }
+
         // Limits the max speed the object will move
         if (this.rb.velocity.magnitude > this.maxSpeed) {
             this.rb.velocity = rb.velocity.normalized * this.maxSpeed;
@@ -37,16 +41,17 @@ public class MovePlayer : MonoBehaviour, MovableInterface {
 
     public void Move(Vector3 direction) {
         this.direction = direction;
+
         if (direction != Vector3.zero) {
             if (direction.x == 0) {
                 this.rb.constraints = RigidbodyConstraints.FreezePositionX 
-                    & RigidbodyConstraints.FreezeRotation 
-                    & RigidbodyConstraints.FreezePositionY;
+                    | RigidbodyConstraints.FreezeRotation 
+                    | RigidbodyConstraints.FreezePositionY;
             }
             else if (direction.z == 0) {
                 this.rb.constraints = RigidbodyConstraints.FreezePositionZ
-                    & RigidbodyConstraints.FreezeRotation
-                    & RigidbodyConstraints.FreezePositionY;
+                    | RigidbodyConstraints.FreezeRotation
+                    | RigidbodyConstraints.FreezePositionY;
             }
         }
         

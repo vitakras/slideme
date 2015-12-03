@@ -22,9 +22,16 @@ public class PlayerController : MonoBehaviour {
 
         Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
-        foreach(MovableInterface moveable in this.movables) {
+        foreach (MovableInterface moveable in this.movables) {
             if (Input.anyKeyDown) {
                 moveable.isMoving = true;
+            }
+
+            if (Input.GetKeyUp(KeyCode.UpArrow) ||
+                Input.GetKeyUp(KeyCode.DownArrow) ||
+                Input.GetKeyUp(KeyCode.LeftArrow) ||
+                Input.GetKeyUp(KeyCode.RightArrow)) {
+                moveable.isMoving = false;
             }
 
             moveable.Move(direction);
