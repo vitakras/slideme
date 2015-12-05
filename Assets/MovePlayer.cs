@@ -5,58 +5,61 @@ using System;
 [RequireComponent(typeof(Rigidbody))]
 public class MovePlayer : MonoBehaviour, MovableInterface {
 
-    public float thrust;
     public float maxSpeed;
+    public float rayDistance = 1.5f;
 
+    private Vector3 targetPosition;
     private Vector3 direction;
-    private bool moving = false;
-    private Rigidbody rb;
+
+    private bool moving;
+    private bool calStopPosition;
 
     // Use this for initialization
     void Start () {
-        this.rb = gameObject.GetComponent<Rigidbody>(); 
         this.direction = Vector3.zero;
+        this.targetPosition = this.transform.position;
         this.moving = false;
-    }
-	
-	// Update is called once per frame
-	void Update () {
-	}
-
-    void FixedUpdate() {
-        if (moving && direction != Vector3.zero) {
-            this.rb.AddForce(this.direction * this.thrust);
-        }
-
-        if (!moving) {
-            this.rb.velocity = Vector3.zero;
-        }
-
-        // Limits the max speed the object will move
-        if (this.rb.velocity.magnitude > this.maxSpeed) {
-            this.rb.velocity = rb.velocity.normalized * this.maxSpeed;
-        }
+        this.calStopPosition = false;
     }
 
+    // Update is called once per frame
+    void Update() {
+        if (!isMoving && !this.calStopPosition) {
+            CalculateTargetPosition();
+            this.calStopPosition = true; // to avoid redoing this calculation
+        }
+
+
+        float step = maxSpeed * Time.deltaTime;
+        transform.position = Vector3.MoveTowards(transform.position, this.targetPosition, step);
+   }
+
+    void OnCollisionEnter(Collision collision) {
+        Debug.Log("ENTER");
+
+    }
+
+    void OnTriggerEnter(Collider other) {
+        Debug.Log("ENTER");
+    }
 
     public void Move(Vector3 direction) {
-        this.direction = direction;
-
         if (direction != Vector3.zero) {
-            if (direction.x == 0) {
-                this.rb.constraints = RigidbodyConstraints.FreezePositionX 
-                    | RigidbodyConstraints.FreezeRotation 
-                    | RigidbodyConstraints.FreezePositionY;
+            RaycastHit hitInfo;
+            this.direction = direction.normalized;
+            this.calStopPosition = false; // when new position is given we want to rest this
+
+            Debug.DrawRay(this.transform.position, transform.TransformDirection(direction) * this.rayDistance);
+            Debug.Log("Drawing array");
+            if (Physics.Raycast(this.transform.position, transform.TransformDirection(direction), out hitInfo, this.rayDistance)) {
+                this.isMoving = false;
+                Debug.Log("Will Hit something");
+                return;
             }
-            else if (direction.z == 0) {
-                this.rb.constraints = RigidbodyConstraints.FreezePositionZ
-                    | RigidbodyConstraints.FreezeRotation
-                    | RigidbodyConstraints.FreezePositionY;
-            }
+
+
+            this.targetPosition = this.transform.position + this.direction;
         }
-        
-        // Sets Vector to Magnitude of 1 
-        this.direction.Normalize();
     }
 
     public bool isMoving {
@@ -67,5 +70,13 @@ public class MovePlayer : MonoBehaviour, MovableInterface {
         set {
             this.moving = value;
         }
+    }
+
+    private void CalculateTargetPosition() {
+        this.targetPosition = new Vector3(
+           Mathf.Round(targetPosition.x), // direction.x < 0 ? Mathf.Floor(targetPosition.x) : Mathf.Ceil(targetPosition.x),
+           Mathf.Round(targetPosition.y), // direction.y < 0 ? Mathf.Floor(targetPosition.y) : Mathf.Ceil(targetPosition.y),
+           Mathf.Round(targetPosition.z)); // direction.z < 0 ? Mathf.Floor(targetPosition.z) : Mathf.Ceil(targetPosition.z));
+        Debug.Log(this.gameObject + " - taget Position: " + this.targetPosition);
     }
 }
