@@ -52,9 +52,11 @@ public class MovePlayer : MonoBehaviour, MovableInterface {
             Debug.DrawRay(this.transform.position, transform.TransformDirection(direction) * this.rayDistance);
             Debug.Log("Drawing array");
             if (Physics.Raycast(this.transform.position, transform.TransformDirection(direction), out hitInfo, this.rayDistance)) {
-                this.isMoving = false;
-                Debug.Log("Will Hit something");
-                return;
+                if (hitInfo.collider.tag != "Finish") {
+                    this.isMoving = false;
+                    Debug.Log("Will Hit something");
+                    return;
+                }
             }
 
 
@@ -75,7 +77,7 @@ public class MovePlayer : MonoBehaviour, MovableInterface {
     private void CalculateTargetPosition() {
         this.targetPosition = new Vector3(
            Mathf.Round(targetPosition.x), // direction.x < 0 ? Mathf.Floor(targetPosition.x) : Mathf.Ceil(targetPosition.x),
-           Mathf.Round(targetPosition.y), // direction.y < 0 ? Mathf.Floor(targetPosition.y) : Mathf.Ceil(targetPosition.y),
+           targetPosition.y, // Mathf.Round(targetPosition.y), // direction.y < 0 ? Mathf.Floor(targetPosition.y) : Mathf.Ceil(targetPosition.y),
            Mathf.Round(targetPosition.z)); // direction.z < 0 ? Mathf.Floor(targetPosition.z) : Mathf.Ceil(targetPosition.z));
         Debug.Log(this.gameObject + " - taget Position: " + this.targetPosition);
     }
