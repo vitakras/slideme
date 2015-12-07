@@ -39,9 +39,9 @@ public class Grid : MonoBehaviour {
         // Variable declerations 
         int size = (this.xSize + 1) * (this.ySize + 1);
 
-        this.xOffset = this.xSize / 2;
-        this.yOffSet = this.ySize / 2;
-        Debug.Log("Grid Offset:" + new Vector3(xOffset, 0, yOffSet));
+      //  this.xOffset = this.xSize / 2;
+    //    this.yOffSet = this.ySize / 2;
+      //  Debug.Log("Grid Offset:" + new Vector3(xOffset, 0, yOffSet));
 
 
         GetComponent<MeshFilter>().mesh = this.mesh = new Mesh();
@@ -54,7 +54,7 @@ public class Grid : MonoBehaviour {
         Vector4 tangent = new Vector4(1f, 0f, 0f, -1f);
         for (int i = 0, y = 0; y <= ySize; y++) {
             for (int x = 0; x <= xSize; x++, i++) { // increment i here since its a 1D array
-                vertices[i] = new Vector3(x - this.xOffset, 0, y - this.yOffSet);
+                vertices[i] = new Vector3(x, 0, y);
                 uv[i] = new Vector2((float)x / this.xSize, (float)y / ySize);
                 tangenets[i] = tangent;
             }
