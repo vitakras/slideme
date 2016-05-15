@@ -2,7 +2,7 @@
 
 public interface MovableInterface {
 
-    bool isMoving { get; set; }
+    bool isMoving { get; }
 
     void Move(Vector3 direction);
 }
